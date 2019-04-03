@@ -42,17 +42,19 @@ Activate the conda environment: `source activate tst_online`
 
 # Step 4: Set up GEE credentials
 
-After activating the environment, set up the credentials using the following 
-command:
-`python -c "import ee; ee.Initialize()"`
+If you've never used Google Earth Engine through the python API 
+in your computer, you will need to set up credentials. For that,
+type:
 
-If no credentials are found (if you've never done this before)
-an error will appear with the instructions on how to create the
-new credentials. The steps involve opening a web page where
-you must sign in with the Google Account associated with GEE.
-You will authorize access and the page will provide an
-authorization code. You will copy and paste it in the terminal where
-the script is running. More details can be found 
+`earthengine authenticate`
+
+It will open a web page where you must sign in with the Google 
+account associated with GEE. Once authorized, the page will provide an
+authorization code. Copy and paste it in the terminal where
+the script is running. If done properly, it should say
+"Successfully saved authorization token".
+
+More details can be found 
 [here.](https://developers.google.com/earth-engine/python_install_manual#setting-up-authentication-credentials)
 
 # Step 5: Test the GEE installation
@@ -79,5 +81,8 @@ hit Ctrl+d in your keyboard or type exit().
 Start a jupyter notebook (or lab) and open the notebook you need
 
 `jupyter notebook`
+
+Once open, click on `ts_explorer.ipynb`. Then click Cell > Run all.
+If you enabled appmode, you can just click on the "App Mode" button.
 
 
