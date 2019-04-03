@@ -3,6 +3,7 @@ channels:
     - conda-forge
 dependencies:
     # Base
+    - pip
     - python>=3.7
     - numpy
     # Dataframes
