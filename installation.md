@@ -1,17 +1,38 @@
-# Step 1: Clone repo
+# Step 1: Get miniconda
+
+You need a working Python installation to use the tool. The easiest way to 
+install the tool and dependencies is through the use of a conda virtual 
+environment. If you don’t have conda installed, you can get a minimum version 
+(miniconda). You can download the installers for your platform here: 
+
+https://conda.io/miniconda.html
+
+Choose the bash installer for python 3.7, 64-bits (unless you have a 32-bit system) 
+and follow the following instructions depending on your OS:
+
+- For macOS/Unix systems: Use bash installer
+- For Windows: run the executable 
+
+If you are asked if you want to append the conda installation to your PATH, 
+answer 'Yes'.
+
+In windows, once the installation finishes, open the 
+‘Anaconda prompt’. Then issue the command:
+
+conda install git
+
+# Step 2: Clone the repo
+
+Issue the following command in your Anaconda prompt:
 
 `git clone https://github.com/parevalo/tstools-online`
 
-# Step 2: Get anaconda or miniconda
-
-Make sure conda is installed, either from Anaconda or Miniconda.
-You can get miniconda [here](https://conda.io/miniconda.html).
-If you already have it installed, skip to the next step.
+Then cd into the tstools-online folder.
 
 # Step 3: Create a conda environment
 
-Locate the newly created folder and the requirements.yml file. Then
-create a new conda environment using the requirements file
+Inside the newly created folder, locate the requirements.yml file. Then
+create a new conda environment using that file with the following command:
 
 `conda env create -f requirements.yml`
 
@@ -37,7 +58,7 @@ the script is running. More details can be found
 
 # Step 5: Test the GEE installation
 
-In a Python session, run the following code:
+Start a python session (just type python), then run the following code:
 
 ```
 # Import the Earth Engine Python Package
@@ -51,7 +72,8 @@ image = ee.Image('srtm90_v4')
 print(image.getInfo())
 ```
 
-You should see the metadata for an image
+You should see the metadata for an image. To exit the python session
+hit Ctrl+d in your keyboard or type exit().
 
 # Step 7: Run the notebook
 
