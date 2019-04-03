@@ -5,7 +5,7 @@ install the tool and dependencies is through the use of a conda virtual
 environment. If you don’t have conda installed, you can get a minimum version 
 (miniconda). You can download the installers for your platform here: 
 
-https://conda.io/miniconda.html
+https://docs.conda.io/en/latest/miniconda.html
 
 Choose the bash installer for python 3.7, 64-bits (unless you have a 32-bit system) 
 and follow the following instructions depending on your OS:
