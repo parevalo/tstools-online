@@ -5,19 +5,10 @@ dependencies:
     # Base
     - python>=3.7
     - numpy
-    - scipy
-    # Statistics
-    - scikit-learn
+    # Dataframes
     - pandas
     - geopandas
-    # GDAL AND IO
-    - rasterio>=1.0*
-    - fiona
-    - shapely
-    - pyproj
-    - gdal
     # Plotting
-    - matplotlib
     - bqplot
     # Interactive
     - nodejs

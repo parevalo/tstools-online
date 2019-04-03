@@ -1,4 +1,3 @@
-import sqlite3
 import numpy as np
 import ee
 import pandas as pd
