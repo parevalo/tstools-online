@@ -36,14 +36,14 @@ class TSTools(object):
     PyCCDdf = pd.DataFrame()
     band_list = ['BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2', 'BRIGHTNESS',
                  'GREENNESS', 'WETNESS']
-    year_range = [1986, 2018]
+    year_range = [1986, 2020]
     doy_range = [1, 365]
     step = 1  #in years
 
 
     ###### Widgets ######
     ylim2 = plots.make_range_slider([0, 4000], -10000, 10000, 500, 'YLim:')
-    xlim2 = plots.make_range_slider([2000, 2018], 1984, 2019, 1, 'XLim:')
+    xlim2 = plots.make_range_slider([2000, 2020], 1984, 2020, 1, 'XLim:')
 
     band_selector2 = plots.make_drop('SWIR1', band_list, 'Select band')
     image_band_1 = plots.make_drop('SWIR1', band_list, 'Red:')
@@ -264,7 +264,14 @@ class TSTools(object):
     lc8.on_hover(hover_event)
 
     # Mapping
+    measure = ipyleaflet.MeasureControl(position='bottomleft',
+                                        active_color = 'orange',
+                                        primary_length_unit = 'kilometers'
+                                        )
+    measure.completed_color = 'red'
+    
     dc.on_draw(do_draw)
     m.add_control(dc)
+    m.add_control(measure)
     m.add_control(ipyleaflet.LayersControl())
 
