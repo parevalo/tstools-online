@@ -10,8 +10,9 @@ https://docs.conda.io/en/latest/miniconda.html
 Choose the bash installer for python 3.7, 64-bits (unless you have a 32-bit system) 
 and follow the following instructions depending on your OS:
 
-- For macOS/Unix systems: Use bash installer. If asked to append to installation to your 
-  PATH, say "no".
+- For macOS/Unix systems: Use bash installer. If asked to initialize miniconda, 
+  answer 'yes'. Once the installation is finished, you will need to log out
+  and then log back in to your computer.
 - For Windows: run the executable. Leave the advanced options as they are and
   proceed with the installation.
 
