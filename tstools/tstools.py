@@ -34,9 +34,9 @@ class TSTools(object):
     click_df = pd.DataFrame()
     click_geojson = ''
     PyCCDdf = pd.DataFrame()
+    results = ''
     band_list = ['BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2', 'BRIGHTNESS',
                  'GREENNESS', 'WETNESS']
-    year_range = [1986, 2020]
     doy_range = [1, 365]
     step = 1  #in years
 
@@ -58,6 +58,7 @@ class TSTools(object):
 
     # Buttons
     pyccd_button2 = plots.make_button(False, 'Run PyCCD 2', icon='')
+    toggle_pyccd_button2 = plots.make_button(False, 'Clear PyCCD', icon='')
     clear_layers = plots.make_button(False, 'Clear Map', icon='')
 
     # HTML
@@ -182,10 +183,9 @@ class TSTools(object):
     # Plot ts for point
     def do_draw(self, action, geo_json):
         current_band = TSTools.band_list[TSTools.band_index2]
-        year_range = TSTools.year_range
         doy_range = TSTools.doy_range
         _col, _df = utils.handle_draw(action, geo_json, current_band, 
-                                      year_range, doy_range)
+                                      list(TSTools.xlim2.value), doy_range)
         TSTools.click_geojson = geo_json
         TSTools.click_df = _df
         TSTools.click_col = _col
@@ -219,7 +219,7 @@ class TSTools(object):
         display_legend = TSTools.lc7.display_legend
         dfPyCCD = TSTools.click_df
         band_index = TSTools.band_index2
-        results = ccd_tools.run_pyccd(display_legend, dfPyCCD, band_index)
+        TSTools.results = ccd_tools.run_pyccd(display_legend, dfPyCCD, band_index)
         if band_index > 5:
             TSTools.lc6.y = []
             TSTools.lc6.x = []
@@ -228,9 +228,15 @@ class TSTools(object):
             TSTools.lc7.display_legend = False
             return
         else:
-            ccd_tools.plot_pyccd(dfPyCCD, results, band_index, (0, 4000),
+            ccd_tools.plot_pyccd(dfPyCCD, TSTools.results, band_index, (0, 4000),
                                  TSTools.lc6, TSTools.lc7)
             TSTools.lc7.display_legend = True
+
+
+    # Clear pyccd results
+    def clear_pyccd2(b):
+        TSTools.lc6.x = []
+        TSTools.lc7.y = []
 
     ####### Widget Interactions #######
     dc = ipyleaflet.DrawControl(marker={'shapeOptions': {'color': '#ff0000'}},
@@ -254,6 +260,7 @@ class TSTools(object):
 
     # pyccd
     pyccd_button2.on_click(do_pyccd2)
+    toggle_pyccd_button2.on_click(clear_pyccd2)
 
     # Plots
     lc3.on_element_click(add_image2)
