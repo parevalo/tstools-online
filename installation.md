@@ -7,19 +7,15 @@ environment. If you don’t have conda installed, you can get a minimum version
 
 https://docs.conda.io/en/latest/miniconda.html
 
-Choose the bash installer for python 3.7, 64-bits (unless you have a 32-bit system) 
+Choose the bash installer for python 3.7, 64-bits 
 and follow the following instructions depending on your OS:
 
 - For macOS/Unix systems: Use bash installer. If asked to initialize miniconda, 
   answer 'yes'. Once the installation is finished, you will need to log out
-  and then log back in to your computer.
+  of your operating system's user session and then log back in.
 - For Windows: run the executable. Leave the advanced options as they are and
   proceed with the installation.
 
-In windows, once the installation finishes, open the 
-‘Anaconda prompt’. Then issue the command:
-
-conda install git
 
 # Step 2: Clone the repo
 
@@ -39,7 +35,7 @@ create a new conda environment using that file with the following command:
 The newly created environment will contain all the requirements, including
 the Google Earth Engine (GEE) API and its dependencies.
 
-Activate the conda environment: `source activate tst_online`
+Activate the conda environment: `conda activate tst_online`
 
 # Step 4: Set up GEE credentials
 
@@ -60,7 +56,8 @@ More details can be found
 
 # Step 5: Test the GEE installation
 
-Start a python session (just type python), then run the following code:
+Start a python session (just type python), then run the following code 
+(lines that start with # are comments, you don't need to run those):
 
 ```
 # Import the Earth Engine Python Package
@@ -77,13 +74,23 @@ print(image.getInfo())
 You should see the metadata for an image. To exit the python session
 hit Ctrl+d in your keyboard or type exit().
 
-# Step 7: Run the notebook
+# Step 6: Run the notebook
 
-Start a jupyter notebook (or lab) and open the notebook you need
+Start a jupyter notebook (or lab):
 
 `jupyter notebook`
 
 Once open, click on `ts_explorer.ipynb`. Then click Cell > Run all.
 If you enabled appmode, you can just click on the "App Mode" button.
+Once you're done, you can close the browser window and the terminal
+window were you typed all the commands.
 
+# TO RUN THE NOTEBOOK AGAIN:
 
+If you want to re-run the notebook at another time, you don't need to
+re-run the installation steps (1 to 6). You will only need to:
+
+- Open a new terminal (macOS, linux) or the Anaconda prompt (Windows)
+- Activate the conda environment: `conda activate tst_online`
+- cd to the repository folder (the tstools-online folder)
+- Start a jupyter notebook: `jupyter notebook`
