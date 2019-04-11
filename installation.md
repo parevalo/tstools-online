@@ -1,16 +1,16 @@
 # Step 1: Get miniconda
 
-You need a working Python installation to use the tool. The easiest way to 
-install the tool and dependencies is through the use of a conda virtual 
-environment. If you don’t have conda installed, you can get a minimum version 
-(miniconda). You can download the installers for your platform here: 
+You need a working Python installation to use the tool. The easiest way to
+install the tool and dependencies is through the use of a conda virtual
+environment. If you don’t have conda installed, you can get a minimum version
+(miniconda). You can download the installers for your platform here:
 
 https://docs.conda.io/en/latest/miniconda.html
 
-Choose the bash installer for python 3.7, 64-bits 
+Choose the bash installer for python 3.7, 64-bits
 and follow the following instructions depending on your OS:
 
-- For macOS/Unix systems: Use bash installer. If asked to initialize miniconda, 
+- For macOS/Unix systems: Use bash installer. If asked to initialize miniconda,
   answer 'yes'. Once the installation is finished, you will need to log out
   of your operating system's user session and then log back in.
 - For Windows: run the executable. Leave the advanced options as they are and
@@ -22,6 +22,10 @@ and follow the following instructions depending on your OS:
 Issue the following command in your Anaconda prompt:
 
 `git clone https://github.com/parevalo/tstools-online`
+
+If you get an error indicating that git is not installed, run:
+
+`conda install git`
 
 Then cd into the tstools-online folder.
 
@@ -39,24 +43,24 @@ Activate the conda environment: `conda activate tst_online`
 
 # Step 4: Set up GEE credentials
 
-If you've never used Google Earth Engine through the python API 
+If you've never used Google Earth Engine through the python API
 in your computer, you will need to set up credentials. For that,
 type:
 
 `earthengine authenticate`
 
-It will open a web page where you must sign in with the Google 
+It will open a web page where you must sign in with the Google
 account associated with GEE. Once authorized, the page will provide an
 authorization code. Copy and paste it in the terminal where
 the script is running. If done properly, it should say
 "Successfully saved authorization token".
 
-More details can be found 
+More details can be found
 [here.](https://developers.google.com/earth-engine/python_install_manual#setting-up-authentication-credentials)
 
 # Step 5: Test the GEE installation
 
-Start a python session (just type python), then run the following code 
+Start a python session (just type python), then run the following code
 (lines that start with # are comments, you don't need to run those):
 
 ```
