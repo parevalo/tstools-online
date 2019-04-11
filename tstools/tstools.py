@@ -36,7 +36,7 @@ class TSTools(object):
     PyCCDdf = pd.DataFrame()
     results = ''
     band_list = ['BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2', 'BRIGHTNESS',
-                 'GREENNESS', 'WETNESS']
+                 'GREENNESS', 'WETNESS', 'NDVI']
     doy_range = [1, 365]
     step = 1  #in years
 
