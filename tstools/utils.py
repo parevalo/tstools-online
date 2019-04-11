@@ -102,7 +102,7 @@ def doIndices(fullImage):
     return ee.Image(newImage)\
         .addBands([ndfi.rename(['NDFI']).multiply(10000), ndvi.multiply(10000), evi.multiply(10000)])\
         .select(['band_0','band_1','band_2','band_3','NDFI','NDVI','EVI','BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL','pixel_qa'])\
-        .rename(['GV','Shade','NPV','Soil','NDFI','NDVI','EVI','BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL','pixel_qa'])\
+        .rename(['GV','Shade','NPV','Soil','NDFI','NDVI','EVI','BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL', 'pixel_qa'])
 
 
 
@@ -322,8 +322,6 @@ def get_indices(df):
                       (df['NIR'] * 0.7940) + (df['SWIR1'] * -0.0002) + (df['SWIR2'] * -0.1446)
     df['WETNESS'] = (df['BLUE'] * 0.0315) + (df['GREEN'] * 0.2021) + (df['RED'] * 0.3102) +\
                     (df['NIR'] * 0.1594) + (df['SWIR1'] * -0.6806) + (df['SWIR2'] * -0.6109)
-    df['NDVI'] = ((df['NIR'] - df['RED']) / (df['NIR'] + df['RED']))
-
     return df
 
 # Get time series for location as a pandas dataframe
@@ -331,7 +329,8 @@ def get_df_full(collection, coords):
 
     point = ee.Geometry.Point(coords)
     # Sample for a time series of values at the point.
-    geom_values = collection.filterBounds(point).getRegion(geometry=point, scale=30)
+    filtered_col = collection.filterBounds(point).map(doIndices)
+    geom_values = filtered_col.getRegion(geometry=point, scale=30)
     geom_values_list = ee.List(geom_values).getInfo()
     # Convert to a Pandas DataFrame.
     header = geom_values_list[0]
@@ -344,7 +343,8 @@ def get_df_full(collection, coords):
     data = data.sort_values('datetime')
     data['ord_time'] = data['datetime'].apply(datetime.date.toordinal)
     data = data[['id', 'datetime', 'ord_time', 'BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1',
-                'SWIR2', 'THERMAL', 'pixel_qa', 'doy', 'color']]
+                'SWIR2', 'THERMAL', 'GV','Shade','NPV','Soil','NDFI','NDVI','EVI',
+                'pixel_qa', 'doy', 'color']]
     data = data.dropna()
     data = get_indices(data)
     return data
