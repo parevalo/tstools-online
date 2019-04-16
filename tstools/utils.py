@@ -60,7 +60,9 @@ def get_full_collection(coords, year_range, doy_range):
     l5_filtered1 = l5_renamed.map(cloud_mask_l4_7_C1)
 
 
-    all_scenes = ee.ImageCollection((l8_filtered1.merge(l7_filtered1)).merge(l5_filtered1)).sort('system:time_start')
+    all_scenes = ee.ImageCollection((l8_filtered1.merge(l7_filtered1))\
+                .merge(l5_filtered1)).sort('system:time_start').map(doIndices)
+    
     return all_scenes
 
 
@@ -99,237 +101,54 @@ def doIndices(fullImage):
               'B1': ee.Image(image).select(['BLUE'])
           }).rename('EVI')
 
+    brightness = ee.Image(image).expression(
+        '(L1 * BLUE) + (L2 * GREEN) + (L3 * RED) + (L4 * NIR) + (L5 * SWIR1) + (L6 * B6)',
+        {
+            'L1': ee.Image(image).select('BLUE'), 'BLUE': 0.2043,
+            'L2': ee.Image(image).select('GREEN'),'GREEN': 0.4158,
+            'L3': ee.Image(image).select('RED'), 'RED': 0.5524,
+            'L4': ee.Image(image).select('NIR'), 'NIR': 0.5741,
+            'L5': ee.Image(image).select('SWIR1'), 'SWIR1': 0.3124,
+            'L6': ee.Image(image).select('SWIR2'), 'B6': 0.2303
+        }).rename('BRIGHTNESS')
+    greenness = ee.Image(image).expression(
+        '(L1 * BLUE) + (L2 * GREEN) + (L3 * RED) + (L4 * NIR) + (L5 * SWIR1) + (L6 * B6)',
+        {
+            'L1': image.select('BLUE'), 'BLUE': -0.1603,
+            'L2': image.select('GREEN'), 'GREEN': -0.2819,
+            'L3': image.select('RED'), 'RED': -0.4934,
+            'L4': image.select('NIR'), 'NIR': 0.7940,
+            'L5': image.select('SWIR1'), 'SWIR1': -0.0002,
+            'L6': image.select('SWIR2'), 'B6': -0.1446
+        }).rename('GREENNESS')
+    wetness = ee.Image(image).expression(
+        '(L1 * BLUE) + (L2 * GREEN) + (L3 * RED) + (L4 * NIR) + (L5 * SWIR1) + (L6 * B6)',
+        {
+            'L1': image.select('BLUE'), 'BLUE': 0.0315,
+            'L2': image.select('GREEN'), 'GREEN': 0.2021,
+            'L3': image.select('RED'), 'RED': 0.3102,
+            'L4': image.select('NIR'), 'NIR': 0.1594,
+            'L5': image.select('SWIR1'), 'SWIR1': -0.6806,
+            'L6': image.select('SWIR2'), 'B6': -0.6109
+        }).rename('WETNESS')
+
     return ee.Image(newImage)\
-        .addBands([ndfi.rename(['NDFI']).multiply(10000), ndvi.multiply(10000), evi.multiply(10000)])\
-        .select(['band_0','band_1','band_2','band_3','NDFI','NDVI','EVI','BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL','pixel_qa'])\
-        .rename(['GV','Shade','NPV','Soil','NDFI','NDVI','EVI','BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL', 'pixel_qa'])
+        .addBands([ndfi.rename(['NDFI']).multiply(10000), ndvi.multiply(10000),\
+                   evi.multiply(10000), brightness, greenness, wetness])\
+        .select(['band_0','band_1','band_2','band_3','NDFI','NDVI','EVI','BLUE',\
+                 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL', 'BRIGHTNESS',\
+                 'GREENNESS', 'WETNESS', 'pixel_qa'])\
+        .rename(['GV','Shade','NPV','Soil','NDFI','NDVI','EVI','BLUE', 'GREEN', \
+                 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL', 'BRIGHTNESS', \
+                 'GREENNESS', 'WETNESS', 'pixel_qa'])
 
-
-
-def save_amazon(interface, Plot_interface):
-    """ Save the sample to the database """
-
-    idSample = 'N/A'
-    lat =  'N/A'
-    lon = 'N/A'
-    num = 'N/A'
-    lc1  = 'N/A'
-    lc2 = 'N/A'
-    lcConf = 'N/A'
-    lcNotes = 'N/A'
-    date1 = 'N/A'
-    type1 = 'N/A'
-    agent1 = 'N/A'
-    conf1 = 'N/A'
-    image1 = 'N/A'
-    notes1 = 'N/A'
-    date2 = 'N/A'
-    type2 = 'N/A'
-    agent2 = 'N/A'
-    conf2 = 'N/A'
-    image2 = 'N/A'
-    notes2 = 'N/A'
-    date3 = 'N/A'
-    type3 = 'N/A'
-    agent3 = 'N/A'
-    conf3 = 'N/A'
-    image3 = 'N/A'
-    notes3 = 'N/A'
-
-    lc1 = interface.drop2.value
-    lc2 = interface.drop3.value
-    num = interface.drop1.value
-    lcConf = interface.confidence.value
-    lcNotes = interface.notes1.value
-    idSample = Plot_interface.current_id
-    lat = Plot_interface.m.center[0]
-    lon = Plot_interface.m.center[1]
-
-    if interface.change_year1.value != 'Year':
-        date1 = interface.change_year1.value
-        type1 = interface.change_type1.value
-        agent1 = interface.change_agent1.value
-        conf1 = interface.change_conf1.value
-        image1 = interface.change_image1.value
-        notes1 = interface.change_notes1.value
-
-    if interface.change_year2.value != 'Year':
-        date2 = interface.change_year2.value
-        type2 = interface.change_type2.value
-        agent2 = interface.change_agent2.value
-        conf2 = interface.change_conf2.value
-        image2 = interface.change_image2.value
-        notes2 = interface.change_notes2.value
-
-    if interface.change_year3.value != 'Year':
-        date3 = interface.change_year3.value
-        type3 = interface.change_type3.value
-        agent3 = interface.change_agent3.value
-        conf3 = interface.change_conf3.value
-        image3 = interface.change_image3.value
-        notes3 = interface.change_notes3.value
-
-
-    # Reset the buttons
-    # Save to drive
-    sampleInputList = [str(idSample), str(lat), str(lon), str(num), str(lc1), str(lc2), str(lcConf), str(lcNotes),
-                       str(date1), str(type1), str(agent1), str(conf1), str(image1), str(notes1),
-                       str(date2), str(type2), str(agent2), str(conf2), str(image2), str(notes2),
-                       str(date3), str(type3), str(agent3), str(conf3), str(image3), str(notes3)]
-
-    sampleInputListFull = sampleInputList
-
-    interface.sheet.insert_row(sampleInputListFull, 2)
-
-    # Change save validity state
-    interface.valid.value = True
-    interface.valid.description='Saved!'
-
-    interface.reset_widgets()
-
-
-# Old: save sample to database
-def save_sample(interface, Plot_interface):
-    # Connect to the database
-    conn = sqlite3.connect(interface.dbPath)
-    c = conn.cursor()
-
-    # Get everything in right format
-    year1 = interface.years.value[0]
-    year2 = interface.years.value[1]
-
-    waterType = 'N/A'
-    bareType = 'N/A'
-    albedo = 'N/A'
-    use = 'N/A'
-    height = 'N/A'
-    transport = 'N/A'
-    impervious = 'N/A'
-    density = 'N/A'
-    vegType1 = 'N/A'
-    herbaceousType = 'N/A'
-    shrubType = 'N/A'
-    forestPhenology = 'N/A'
-    leafType = 'N/A'
-    location = 'N/A'
-
-    condition = interface.drop9.value
-    coverType = interface.drop0.value
-    changeAgent = interface.change_selector.value
-    changeAgent = [str(i) for i in changeAgent]
-    changeAgent = ', '.join(changeAgent)
-    if changeAgent != 'None':
-        confCA = interface.ca_confidence.value
-        break_year = interface.break_year.value
-        break_range1 = interface.break_years.value[0]
-        break_range2 = interface.break_years.value[1]
-    else:
-        confCA = 'N/A'
-        break_year = 'N/A'
-        break_range1 = 'N/A'
-        break_range2 = 'N/A'
-    ca_other = interface.change_other.value
-    if ca_other == 'Specify other':
-        ca_other = 'N/A'
-
-    direction = interface.direction.value
-    direction = [str(i) for i in direction]
-    direction = ', '.join(direction)
-
-    class1 = 'Unfilled'
-
-    # Ice/Snow
-    if interface.drop1.value == 'Yes':
-        class1 = 'Snow/Ice'
-    else:
-        if interface.drop2.value == 'No': #Non-Veg
-            class1 = interface.drop3.value
-            if class1 == 'Water':
-                waterType = interface.drop4.value
-            elif class1 == 'Bare':
-                bareType = interface.drop4.value
-            else:
-                albedo = interface.drop4.value #HERE
-                use = interface.drop5.value
-                height = interface.drop6.value
-                transport = interface.drop7.value
-                impervious = interface.drop8.value
-        elif interface.drop2.value == 'Yes': #Veg
-            density = interface.drop3.value
-            vegType1 = interface.veg_selector.value
-            vegType1 = [str(i) for i in vegType1]
-            vegType1 = ', '.join(vegType1)
-            if interface.drop5.value == 'No': #Herbaceous
-                class1 = 'Herbaceous'
-                herbaceousType = interface.drop6.value
-            elif interface.drop5.value == 'Yes':
-                class1 = 'Forest'
-                forestPhenology = interface.drop6.value
-                leafType = interface.drop7.value
-                location = interface.drop8.value
-
-    conf = interface.confidence.value
-    notes_value = interface.notes.value
-    idSample = Plot_interface.current_id
-    lat = Plot_interface.m.center[0]
-    lon = Plot_interface.m.center[1]
-
-    sampleInput = (idSample, lat, lon, year1, year2, direction, coverType, condition,
-                       changeAgent, ca_other, confCA, class1, waterType,
-                       bareType, albedo, use, height, transport, impervious, density,
-                       vegType1, herbaceousType, shrubType, forestPhenology, leafType,
-                       location, conf, notes_value, break_year, break_range1, break_range2)
-
-
-    # Put sample information into database
-    c.execute("""insert into measures
-              values {i}""".format(i=sampleInput))
-
-    # Save (commit) the changes
-    conn.commit()
-
-    # Close the cursor
-    c.close()
-
-    # Change save validity state
-    interface.valid.value = True
-    interface.valid.description='Saved!'
-
-    # Reset the buttons
-    interface.years.set_trait('value',[2012, 2015])
-
-    # Save to drive
-    sampleInputList = [str(idSample), str(lat), str(lon), str(year1), str(year2), direction, coverType, condition,
-                       changeAgent, ca_other, confCA, class1, waterType,
-                       bareType, albedo, use, height, transport, impervious, density,
-                       vegType1, herbaceousType, shrubType, forestPhenology, leafType, location, conf, notes_value]
-
-    sampleInputListFull = sampleInputList
-
-    interface.sheet.insert_row(sampleInputListFull, 2)
-
-   # Save break information to second sheet
-    if condition == 'Break':
-        breakList = [str(idSample), str(lat), str(lon), changeAgent, ca_other, confCA, break_year, break_range1, break_range2]
-        interface.sheet2.insert_row(breakList, 2)
-
-# Calculate spectral indices
-def get_indices(df):
-
-    df['BRIGHTNESS'] = (df['BLUE'] * 0.2043) + (df['GREEN'] * 0.4158) + (df['RED'] * 0.5524) +\
-                       (df['NIR'] * 0.5741) + (df['SWIR1'] * 0.3124) + (df['SWIR2'] * 0.2303)
-    df['GREENNESS'] = (df['BLUE'] * -0.1603) + (df['GREEN'] * 0.2819) + (df['RED'] * -0.4934) +\
-                      (df['NIR'] * 0.7940) + (df['SWIR1'] * -0.0002) + (df['SWIR2'] * -0.1446)
-    df['WETNESS'] = (df['BLUE'] * 0.0315) + (df['GREEN'] * 0.2021) + (df['RED'] * 0.3102) +\
-                    (df['NIR'] * 0.1594) + (df['SWIR1'] * -0.6806) + (df['SWIR2'] * -0.6109)
-    return df
 
 # Get time series for location as a pandas dataframe
 def get_df_full(collection, coords):
 
     point = ee.Geometry.Point(coords)
     # Sample for a time series of values at the point.
-    filtered_col = collection.filterBounds(point).map(doIndices)
+    filtered_col = collection.filterBounds(point)
     geom_values = filtered_col.getRegion(geometry=point, scale=30)
     geom_values_list = ee.List(geom_values).getInfo()
     # Convert to a Pandas DataFrame.
@@ -342,11 +161,11 @@ def get_df_full(collection, coords):
     data.set_index('time')
     data = data.sort_values('datetime')
     data['ord_time'] = data['datetime'].apply(datetime.date.toordinal)
-    data = data[['id', 'datetime', 'ord_time', 'BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1',
-                'SWIR2', 'THERMAL', 'GV','Shade','NPV','Soil','NDFI','NDVI','EVI',
+    data = data[['id', 'datetime', 'ord_time', 'BLUE', 'GREEN', 'RED', 'NIR', 
+                 'SWIR1', 'SWIR2', 'BRIGHTNESS', 'GREENNESS', 'WETNESS', 
+                 'THERMAL', 'GV', 'Shade', 'NPV', 'Soil', 'NDFI', 'NDVI', 'EVI',
                 'pixel_qa', 'doy', 'color']]
     data = data.dropna()
-    data = get_indices(data)
     return data
 
 # make color list for all 365 days of year
@@ -367,61 +186,6 @@ def GetTileLayerUrl(ee_image_object):
     map_id = ee.Image(ee_image_object).getMapId()
     tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
     return tile_url_template.format(**map_id)
-
-
-# Old
-# Convert a FeatureCollection into a pandas DataFrame
-# Features is a list of dict with the output
-def fc2df(fc):
-
-    features = fc.getInfo()['features']
-    dictarr = []
-    for f in features:
-        # Store all attributes in a dict
-        attr = f['properties']
-        dictarr.append(attr)
-
-    return pd.DataFrame(dictarr)
-
-# Old
-# Get time series for a location as a pandas dataframe
-def get_df(collection, coords, band):
-
-    point = ee.Geometry.Point(coords)
-    # Sample for a time series of values at the point.
-    geom_values = collection.filterBounds(point).select(band).getRegion(geometry=point, scale=30)
-    geom_values_list = ee.List(geom_values).getInfo()
-    # Convert to a Pandas DataFrame.
-    header = geom_values_list[0]
-    data = pd.DataFrame(geom_values_list[1:], columns=header)
-    data['datetime'] = pd.to_datetime(data['time'], unit='ms', utc=True)
-    data.set_index('time')
-    data = data.sort_values('datetime')
-    data = data[['id', 'datetime', band]]
-    return data
-
-# Old (no longer used)
-# Get time series for location in format to use in pyccd
-def make_df_pyccd(collection, point):
-    band_list = ['BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL', 'pixel_qa']
-    rename_list = ['BLUE', 'GREEN', 'RED', 'NIR', 'SWIR1', 'SWIR2','THERMAL', 'pixel_qa']
-    info = collection.getRegion(point, 30).getInfo()
-    header = info[0]
-    data = np.array(info[1:])
-    iTime = header.index('time')
-    time = [datetime.datetime.fromtimestamp(i/1000) for i in (data[0:,iTime].astype(int))]
-    time_new = [t.toordinal() for t in (time)]
-    iBands = [header.index(b) for b in band_list]
-    yData = data[0:,iBands].astype(np.float)
-    df = pd.DataFrame(data=yData, index=list(range(len(yData[:,0]))), columns=rename_list)
-    df['time'] = time_new
-    return df
-
-# Append two dataframes
-def update_df(df, df2):
-
-    df = df.append(df2)
-    return df
 
 
 # Convert a FeatureCollection into a geopandas DataFrame
@@ -465,13 +229,3 @@ def handle_draw(action, geo_json, current_band, year_range, doy_range):
     return click_col, click_df
 
 
-# Calculate 90m bbox around clicked point for opportunistic
-# training data collection
-def calculate_clicked_bbox(geojson):
-    click_geom = ee.Geometry(geojson['geometry'])
-    # Asset with projection info per zone
-    all_zones = ee.FeatureCollection("users/parevalo_bu/measures/measures_zones_crs")
-    zone = all_zones.filterBounds(click_geom).first()
-    target_proj = zone.get("CRS")
-    bbox = click_geom.buffer(45, 0, target_proj).bounds(0.01, target_proj)
-    return bbox
