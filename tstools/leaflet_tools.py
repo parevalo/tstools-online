@@ -9,7 +9,7 @@ def make_map(zoom, layout, center, dragging=True, class_popup_on_click=False,
 
     m = ipyleaflet.Map(zoom=zoom, layout=layout, center=center, dragging=dragging,
                        close_popup_on_click=False, basemap=basemap)
-
+    add_basemap(m, ipyleaflet.basemaps.Esri.WorldImagery)
     return m
 
 # Add a basemap
@@ -61,7 +61,8 @@ def add_map_point(data, zoom, m, kml, name):
 # Clear all layers on map
 def clear_map(m, streets=None):
     m.clear_layers()
-    add_basemap(m,ipyleaflet.basemaps.Esri.WorldImagery)
+    add_basemap(m, ipyleaflet.basemaps.Esri.WorldStreetMap )
+    add_basemap(m, ipyleaflet.basemaps.Esri.WorldImagery)
     return
 
 # Add layer from clicked point in sample TS figure

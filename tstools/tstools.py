@@ -248,7 +248,6 @@ class TSTools(object):
     layout = widgets.Layout(width='50%')
     center = (3.3890701010382958, -67.32297252983098)
     m = lft.make_map(zoom, layout, center)
-    lft.add_basemap(m, ipyleaflet.basemaps.Esri.WorldImagery)
 
     # Display controls
     ylim2.observe(change_yaxis2)
