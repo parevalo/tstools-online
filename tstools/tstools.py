@@ -69,7 +69,7 @@ class TSTools(object):
 
     # Scales
     # Dates
-    lc1_x2 = plots.make_bq_scale('date', datetime.date(xlim2.value[0], 2, 1), 
+    lc1_x2 = plots.make_bq_scale('date', datetime.date(xlim2.value[0], 2, 1),
                                  datetime.date(xlim2.value[1], 1, 1))
 
     # DOY
@@ -79,12 +79,12 @@ class TSTools(object):
     lc2_y2 = plots.make_bq_scale('linear', ylim2.value[0], ylim2.value[1])
 
     # plots
-    lc3 = plots.make_bq_plot('scatter', [], [], {'x': lc1_x2, 'y': lc2_y2}, 
+    lc3 = plots.make_bq_plot('scatter', [], [], {'x': lc1_x2, 'y': lc2_y2},
                              [1, 1],
                              {'click': 'select', 'hover': 'tooltip'},
-                             {'opacity': 1.0, 'fill': 'DarkOrange', 
+                             {'opacity': 1.0, 'fill': 'DarkOrange',
                               'stroke': 'Red'},
-                             {'opacity': 0.5}, display_legend=True, 
+                             {'opacity': 0.5}, display_legend=True,
                              labels=['Clicked point'])
 
     lc6 = plots.make_bq_plot('lines', [], [], {'x': lc1_x2, 'y': lc2_y2},
@@ -156,7 +156,7 @@ class TSTools(object):
         new_band = change['new']
         band_index = change['owner'].index
         TSTools.band_index2 = band_index
-        TSTools.lc3.x = TSTools.click_df['datetime']
+        TSTools.lc3.x = TSTools.click_df['datetime'].values
         TSTools.lc3.y = TSTools.click_df[new_band]
         TSTools.plot_ts(TSTools.lc3, 'ts')
         TSTools.plot_ts(TSTools.lc8, 'doy')
@@ -185,7 +185,7 @@ class TSTools(object):
     def do_draw(self, action, geo_json):
         current_band = TSTools.band_list[TSTools.band_index2]
         doy_range = TSTools.doy_range
-        _col, _df = utils.handle_draw(action, geo_json, current_band, 
+        _col, _df = utils.handle_draw(action, geo_json, current_band,
                                       list(TSTools.xlim2.value), doy_range)
         TSTools.click_geojson = geo_json
         TSTools.click_df = _df
@@ -276,9 +276,8 @@ class TSTools(object):
                                         primary_length_unit = 'kilometers'
                                         )
     measure.completed_color = 'red'
-    
+
     dc.on_draw(do_draw)
     m.add_control(dc)
     m.add_control(measure)
     m.add_control(ipyleaflet.LayersControl())
-

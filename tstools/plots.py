@@ -149,7 +149,7 @@ def make_bq_scale(scale_type, _min, _max):
 # Add time series to plot
 def add_plot_ts(df, plot, band='SWIR1', color_marks=None):
 
-    plot.x = df['datetime']
+    plot.x = df['datetime'].values
     plot.y = df[band]
     if color_marks is not None:
         plot.colors = list(df['color'].values)
