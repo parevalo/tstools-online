@@ -62,7 +62,7 @@ def get_full_collection(coords, year_range, doy_range):
 
     all_scenes = ee.ImageCollection((l8_filtered1.merge(l7_filtered1))\
                 .merge(l5_filtered1)).sort('system:time_start').map(doIndices)
-    
+
     return all_scenes
 
 
@@ -161,8 +161,8 @@ def get_df_full(collection, coords):
     data.set_index('time')
     data = data.sort_values('datetime')
     data['ord_time'] = data['datetime'].apply(datetime.date.toordinal)
-    data = data[['id', 'datetime', 'ord_time', 'BLUE', 'GREEN', 'RED', 'NIR', 
-                 'SWIR1', 'SWIR2', 'BRIGHTNESS', 'GREENNESS', 'WETNESS', 
+    data = data[['id', 'datetime', 'ord_time', 'BLUE', 'GREEN', 'RED', 'NIR',
+                 'SWIR1', 'SWIR2', 'BRIGHTNESS', 'GREENNESS', 'WETNESS',
                  'THERMAL', 'GV', 'Shade', 'NPV', 'Soil', 'NDFI', 'NDVI', 'EVI',
                 'pixel_qa', 'doy', 'color']]
     data = data.dropna()
@@ -184,8 +184,7 @@ def get_color_list():
 def GetTileLayerUrl(ee_image_object):
 
     map_id = ee.Image(ee_image_object).getMapId()
-    tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
-    return tile_url_template.format(**map_id)
+    return map_id["tile_fetcher"].url_format
 
 
 # Convert a FeatureCollection into a geopandas DataFrame
@@ -227,5 +226,3 @@ def handle_draw(action, geo_json, current_band, year_range, doy_range):
     click_df = get_df_full(click_col, coords)
 
     return click_col, click_df
-
-
