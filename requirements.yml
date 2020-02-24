@@ -10,7 +10,7 @@ dependencies:
     - pandas
     - geopandas
     # Plotting
-    - bqplot
+    - bqplot==0.11.5
     # Interactive
     - nodejs
     - jupyter
